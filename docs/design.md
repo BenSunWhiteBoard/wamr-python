@@ -364,43 +364,55 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 |              | wasm_xxx_vec_new_empty         |            |                  |
 |              | wasm_xxx_vec_copy              |            |                  |
 |              | wasm_xxx_vec_delete            |            |                  |
+| valkind      | wasm_valkind_is_num            |            |                  |
+|              | wasm_valkind_is_ref            |            |                  |
 | valtype      | wasm_valtype_new               | valtype    | \_\_init\_\_     |
 |              | wasm_valtype_delete            |            | \_\_del\_\_      |
 |              | wasm_valtype_kind              |            |                  |
+|              | wasm_valtype_is_num            |            |                  |
+|              | wasm_valtype_is_ref            |            |                  |
+|              | wasm_valtype_copy              |            |                  |
 |              | _vector methods_               |            |                  |
 | functype     | wasm_functype_new              | functype   |                  |
 |              | wasm_functype_delete           |            |                  |
 |              | wasm_functype_params           |            |                  |
 |              | wasm_functype_results          |            |                  |
+|              | wasm_functype_copy             |            |                  |
 |              | _vector methods_               |            |                  |
 | globaltype   | wasm_globaltype_new            | globaltype |                  |
 |              | wasm_globaltype_delete         |            |                  |
 |              | wasm_globaltype_content        |            |                  |
 |              | wasm_globaltype_mutability     |            |                  |
+|              | wasm_globaltype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
 | tabletype    | wasm_tabletype_new             | tabletype  |                  |
 |              | wasm_tabletype_delete          |            |                  |
 |              | wasm_tabletype_element         |            |                  |
 |              | wasm_tabletype_limits          |            |                  |
+|              | wasm_tabletype_copy            |            |                  |
 |              | _vector methods_               |            |                  |
 | memorytype   | wasm_memorytype_new            | memorytype |                  |
 |              | wasm_memorytype_delete         |            |                  |
 |              | wasm_memorytype_limits         |            |                  |
+|              | wasm_memorytype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
 | externtype   | wasm_externtype_as_XXX         | externtype |                  |
 |              | wasm_XXX_as_externtype         |            |                  |
+|              | wasm_externtype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
 | importtype   | wasm_importtype_new            | importtype |                  |
 |              | wasm_importtype_delete         |            |                  |
 |              | wasm_importtype_module         |            |                  |
 |              | wasm_importtype_name           |            |                  |
 |              | wasm_importtype_type           |            |                  |
+|              | wasm_importtype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
 | exportype    | wasm_exportype_new             | exporttype |                  |
 |              | wasm_exportype_delete          |            |                  |
 |              | wasm_exportype_module          |            |                  |
 |              | wasm_exportype_name            |            |                  |
 |              | wasm_exportype_type            |            |                  |
+|              | wasm_exporttype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
 | name         | wasm_name_new                  | name       |                  |
 |              | wasm_name_delete               |            |                  |
@@ -474,11 +486,15 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 there will be two kinds of tests in the project
 
 - unit test. located in `./tests`. driven by _unittest_. run by
-  `$ python -m unittest`
+  `$ python -m unittest` or `$ make test`.
 - integration test. located in `./examples`.
 
-The whole project is under test-driven development. Each wrapper function will have an
-expect-failure test case and an expect-success test case. The expect-failure one will suppose to catch failed branches, like illegal parameters.
+The whole project is under test-driven development. Every wrapper function will
+have two kinds of test cases. The first kind is positive case. It checks the
+target with normal and safe arguments. Its goal is that the function works well
+with expected inputs. The second kind is negative case. It feeds the function
+with wired, unexpected argumet. It should include, not be limitted, `None`,
+arguments with invalid types.
 
 ## distribution
 
