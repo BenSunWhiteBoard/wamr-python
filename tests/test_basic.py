@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
 
+from pickle import FALSE
 from .context import wamr
 from wamr.ffi import *
 
@@ -16,6 +17,12 @@ class BasicTestSuite(unittest.TestCase):
         self.assertEqual(
             [WASM_I32, WASM_I64, WASM_F32, WASM_F64, WASM_ANYREF, WASM_FUNCREF],
             [0, 1, 2, 3, 4, 128, 129],
+        )
+
+    def test_wasm_mutability(self):
+        self.assertEqual(
+            [WASM_CONST, WASM_VAR],
+            [0, 1],
         )
 
     def test_wasm_valkind_ex(self):
@@ -85,6 +92,47 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_valtype_copy_ex(self):
         self.assertIsNone(wasm_valtype_copy(None))
+    
+    def test_wasm_globaltype_new_happy_path(self):
+        vt = wasm_valtype_new(WASM_FUNCREF) 
+        mut = True
+        self.assertIsNotNone(wasm_globaltype_new(vt, mut)) 
+
+    def test_wasm_globaltype_new_sideway(self):
+        vt = wasm_valtype_new(None) 
+        mut = True
+        self.assertIsNone(wasm_globaltype_new(vt, mut)) 
+
+    def test_wasm_globaltype_delete_happy_path(self):
+        vt = wasm_valtype_new(WASM_ANYREF) 
+        mut = True
+        self.assertIsNone(wasm_globaltype_delete(wasm_globaltype_new(vt, mut))) 
+
+    def test_wasm_globaltype_delete_sideway(self):
+        self.assertIsNone(wasm_globaltype_delete(None)) 
+
+    def test_wasm_globaltype_content(self):
+        vt = wasm_valtype_new(WASM_FUNCREF) 
+        mut = True
+        gt = wasm_globaltype_new(vt, mut)
+        self.assertEqual(vt, wasm_globaltype_content(gt))
+
+    def test_wasm_globaltype_mutability(self):
+        vt1 = wasm_valtype_new(WASM_F32) 
+        mut1 = FALSE
+        gt1 = wasm_globaltype_new(vt1, mut1)
+        self.assertEqual(WASM_CONST, wasm_globaltype_mutability(gt1))
+        vt2 = wasm_valtype_new(WASM_F32) 
+        mut2 = True
+        gt2 = wasm_globaltype_new(vt2, mut2)
+        self.assertEqual(WASM_VAR, wasm_globaltype_mutability(gt2))
+    
+    def test_wasm_globaltype_copy(self):
+        vt = wasm_valtype_new(WASM_I32) 
+        mut = True
+        gt1 = wasm_globaltype_new(vt, mut)
+        gt2 = wasm_globaltype_copy(gt1)
+        self.assertEqual(gt1, gt2) 
 
     def test_wasm_engine_new(self):
         self.assertIsNotNone(wasm_engine_new())
