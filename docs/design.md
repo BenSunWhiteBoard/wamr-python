@@ -323,6 +323,16 @@ directly without any arguments type checking.
 libc.printf(b"Hello, an int %d, a float %f, a string %s\n", c_int(1), c_doulbe(3.14), "World!")
 ```
 
+#### Use `c_bool` to represent `wasm_mutability_t `
+
+- `True` for `WASM_CONST`
+- `False` for `WASM_VALUE`
+
+#### special syntax for `Structure`
+
+- `__eq__` for structures of types. It is used when comparing two types, but
+  not sure if _bindgen.py_ can implement that.
+
 ### bindgen.py
 
 Use _pycparser_. Visit the AST of `core/iwasm/include/wasm_c_api.h` created
@@ -490,11 +500,12 @@ there will be two kinds of tests in the project
 - integration test. located in `./examples`.
 
 The whole project is under test-driven development. Every wrapper function will
-have two kinds of test cases. The first kind is positive case. It checks the
-target with normal and safe arguments. Its goal is that the function works well
-with expected inputs. The second kind is negative case. It feeds the function
-with wired, unexpected argumet. It should include, not be limitted, `None`,
-arguments with invalid types.
+have two kinds of test cases. The first kind is a positive case. It checks a
+wrapper function with expected and safe arguments combinations. Its goal is the
+function should work well with expected inputs. Another kind is a negative
+case. It feeds unexpected argument combinations into a wrapper function. Arguments
+should include but not be limited to `None`. It ensures that the function will
+gracefully handle invalid input or unexpected behavior.
 
 ## distribution
 
