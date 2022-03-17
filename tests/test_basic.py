@@ -124,6 +124,48 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_globaltype_copy_neg(self):
         self.assertIsNone(wasm_globaltype_copy(None))
+        
+    def test_wasm_tabletype_new_pos(self):
+        vt = wasm_valtype_new(WASM_F32)
+        # maybe should implement an wrapper class Limits in Python?
+        limits = Limits(min = 0, max = 0xffffffff)
+        self.assertIsNotNone(wasm_tabletype_new(vt, limits))
+    
+    def test_wasm_tabletype_new_neg(self):
+        vt = wasm_valtype_new(WASM_FUNCREF)
+        self.assertIsNone(wasm_tabletype_new(vt, None))
+
+    def test_wasm_tabletype_delete_pos(self):
+        vt = wasm_valtype_new(WASM_F32)
+        self.assertIsNone(wasm_tabletype_delete(wasm_tabletype_new(vt, Limits(0, 0xffffffff))))
+
+    def test_wasm_tabletype_delete_neg(self):
+        self.assertIsNone(wasm_tabletype_delete(None)) 
+
+    def test_wasm_tabletype_element_pos(self):
+        vt = wasm_valtype_new(WASM_FUNCREF)
+        tt = wasm_tabletype_new(vt, Limits(0, 0xffffffff))
+        self.assertEqual(vt, wasm_tabletype_element(tt))
+
+    def test_wasm_tabletype_element_neg(self):
+        self.assertIsNone(wasm_tabletype_element(None))
+
+    def test_wasm_tabletype_limits_pos(self):
+        limits = Limits(min = 0, max = 0x0000ffff)
+        tt = wasm_tabletype_new(wasm_valtype_new(WASM_FUNCREF), limits)
+        self.assertEqual(limits, wasm_tabletype_limits(tt))
+
+    def test_wasm_tabletype_limits_neg(self):
+        self.assertIsNone(wasm_tabletype_limits(None))
+
+    def test_wasm_tabletype_copy_pos(self):
+        vt = wasm_valtype_new(WASM_FUNCREF)
+        tt1 = wasm_tabletype_new(vt, Limits(0, 0xffffffff))
+        tt2 = wasm_tabletype_copy(tt1)
+        self.assertEqual(tt1, tt2)
+
+    def test_wasm_tabletype_copy_neg(self):
+        self.assertIsNone(wasm_tabletype_copy(None))
 
     def test_wasm_engine_new_pos(self):
         self.assertIsNotNone(wasm_engine_new())

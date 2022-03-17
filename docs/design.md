@@ -378,7 +378,7 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 |              | wasm_valkind_is_ref            |            |                  |
 | valtype      | wasm_valtype_new               | valtype    | \_\_init\_\_     |
 |              | wasm_valtype_delete            |            | \_\_del\_\_      |
-|              | wasm_valtype_kind              |            |                  |
+|              | wasm_valtype_kind              |            | \_\_eq\_\_       |
 |              | wasm_valtype_is_num            |            |                  |
 |              | wasm_valtype_is_ref            |            |                  |
 |              | wasm_valtype_copy              |            |                  |
@@ -389,17 +389,17 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 |              | wasm_functype_results          |            |                  |
 |              | wasm_functype_copy             |            |                  |
 |              | _vector methods_               |            |                  |
-| globaltype   | wasm_globaltype_new            | globaltype |                  |
-|              | wasm_globaltype_delete         |            |                  |
-|              | wasm_globaltype_content        |            |                  |
+| globaltype   | wasm_globaltype_new            | globaltype | \_\_init\_\_     |
+|              | wasm_globaltype_delete         |            | \_\_del\_\_      |
+|              | wasm_globaltype_content        |            | \_\_eq\_\_       |
 |              | wasm_globaltype_mutability     |            |                  |
 |              | wasm_globaltype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
-| tabletype    | wasm_tabletype_new             | tabletype  |                  |
-|              | wasm_tabletype_delete          |            |                  |
-|              | wasm_tabletype_element         |            |                  |
-|              | wasm_tabletype_limits          |            |                  |
-|              | wasm_tabletype_copy            |            |                  |
+| tabletype    | wasm_tabletype_new             | tabletype  | \_\_init\_\_     |
+|              | wasm_tabletype_delete          |            | \_\_del\_\_      |
+|              | wasm_tabletype_element         |            | \_\_eq\_\_       |
+|              | wasm_tabletype_limits          | limits     | \_\_init\_\_     |
+|              | wasm_tabletype_copy            |            | \_\_eq\_\_       |
 |              | _vector methods_               |            |                  |
 | memorytype   | wasm_memorytype_new            | memorytype |                  |
 |              | wasm_memorytype_delete         |            |                  |
