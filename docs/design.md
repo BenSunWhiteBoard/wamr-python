@@ -403,9 +403,9 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 | limits       |                                | Limits     | \_\_init\_\_     |
 |              |                                |            | \_\_eq\_\_       |
 |              | _vector methods_               |            |                  |
-| memorytype   | wasm_memorytype_new            | memorytype |                  |
-|              | wasm_memorytype_delete         |            |                  |
-|              | wasm_memorytype_limits         |            |                  |
+| memorytype   | wasm_memorytype_new            | memorytype | \_\_init\_\_     |
+|              | wasm_memorytype_delete         |            | \_\_del\_\_      |
+|              | wasm_memorytype_limits         |            | \_\_eq\_\_       |
 |              | wasm_memorytype_copy           |            |                  |
 |              | _vector methods_               |            |                  |
 | externtype   | wasm_externtype_as_XXX         | externtype |                  |

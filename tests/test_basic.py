@@ -166,6 +166,37 @@ class BasicTestSuite(unittest.TestCase):
     def test_wasm_tabletype_copy_neg(self):
         self.assertIsNone(wasm_tabletype_copy(None))
 
+    def test_wasm_memorytype_new_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        self.assertIsNotNone(wasm_memorytype_new(limits)) 
+
+    def test_wasm_memorytype_new_neg(self):
+        self.assertIsNone(wasm_memorytype_new(None))
+
+    def test_wasm_memorytype_delete_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        self.assertIsNone(wasm_memorytype_delete(wasm_memorytype_new(limits)))
+
+    def test_wasm_memorytype_delete_neg(self):
+        self.assertIsNone(wasm_memorytype_delete(None)) 
+
+    def test_wasm_memorytype_limits_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        mt = wasm_memorytype_new(limits)
+        self.assertEqual(limits, wasm_memorytype_limits(mt))
+
+    def test_wasm_memorytype_limits_neg(self):
+        self.assertIsNone(wasm_memorytype_limits(None))
+
+    def test_wasm_memorytype_copy_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        mt1 = wasm_memorytype_new(limits)
+        mt2 = wasm_memorytype_copy(mt1)
+        self.assertEqual(mt1, mt2)
+
+    def test_wasm_memorytype_copy_neg(self):
+        self.assertIsNone(wasm_memorytype_copy(None))
+
     def test_wasm_engine_new_pos(self):
         self.assertIsNotNone(wasm_engine_new())
 
