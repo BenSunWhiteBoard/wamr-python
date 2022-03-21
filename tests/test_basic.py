@@ -127,7 +127,6 @@ class BasicTestSuite(unittest.TestCase):
         
     def test_wasm_tabletype_new_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        # maybe should implement an wrapper class Limits in Python?
         limits = Limits(min = 0, max = 0xffffffff)
         self.assertIsNotNone(wasm_tabletype_new(vt, limits))
     

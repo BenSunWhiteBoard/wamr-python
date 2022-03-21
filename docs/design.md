@@ -398,8 +398,10 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 | tabletype    | wasm_tabletype_new             | tabletype  | \_\_init\_\_     |
 |              | wasm_tabletype_delete          |            | \_\_del\_\_      |
 |              | wasm_tabletype_element         |            | \_\_eq\_\_       |
-|              | wasm_tabletype_limits          | limits     | \_\_init\_\_     |
-|              | wasm_tabletype_copy            |            | \_\_eq\_\_       |
+|              | wasm_tabletype_limits          |            |                  |
+|              | wasm_tabletype_copy            |            |                  |
+| limits       |                                | Limits     | \_\_init\_\_     |
+|              |                                |            | \_\_eq\_\_       |
 |              | _vector methods_               |            |                  |
 | memorytype   | wasm_memorytype_new            | memorytype |                  |
 |              | wasm_memorytype_delete         |            |                  |
