@@ -400,9 +400,8 @@ Almost follow the [C++ version of wasm_c_api](https://github.com/WebAssembly/was
 |              | wasm_tabletype_element         |            | \_\_eq\_\_       |
 |              | wasm_tabletype_limits          |            |                  |
 |              | wasm_tabletype_copy            |            |                  |
-| limits       |                                | Limits     | \_\_init\_\_     |
+| limits       |                                | limits     | \_\_init\_\_     |
 |              |                                |            | \_\_eq\_\_       |
-|              | _vector methods_               |            |                  |
 | memorytype   | wasm_memorytype_new            | memorytype |                  |
 |              | wasm_memorytype_delete         |            |                  |
 |              | wasm_memorytype_limits         |            |                  |
@@ -507,7 +506,7 @@ wrapper function with expected and safe arguments combinations. Its goal is the
 function should work well with expected inputs. Another kind is a negative
 case. It feeds unexpected argument combinations into a wrapper function. Arguments
 should include but not be limited to `None`. It ensures that the function will
-gracefully handle invalid input or unexpected behavior.
+gracefully handle invalid input or unexpected behaviors.
 
 ## distribution
 

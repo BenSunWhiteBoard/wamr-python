@@ -12,7 +12,7 @@ import unittest
 
 
 class BasicTestSuite(unittest.TestCase):
-    def test_wasm_valkind(self):
+    def test_wasm_valkind_pos(self):
         self.assertEqual(
             [WASM_I32, WASM_I64, WASM_F32, WASM_F64, WASM_ANYREF, WASM_FUNCREF],
             [0, 1, 2, 3, 4, 128, 129],
@@ -90,7 +90,7 @@ class BasicTestSuite(unittest.TestCase):
         vt = wasm_valtype_new(WASM_FUNCREF)
         self.assertIsNotNone(wasm_globaltype_new(vt, True))
 
-    def test_wasm_globaltype_new_sideway(self):
+    def test_wasm_globaltype_new_neg(self):
         vt = wasm_valtype_new(None)
         self.assertIsNone(wasm_globaltype_new(vt, True))
 
@@ -98,7 +98,7 @@ class BasicTestSuite(unittest.TestCase):
         vt = wasm_valtype_new(WASM_ANYREF)
         self.assertIsNone(wasm_globaltype_delete(wasm_globaltype_new(vt, True)))
 
-    def test_wasm_globaltype_delete_sideway(self):
+    def test_wasm_globaltype_delete_neg(self):
         self.assertIsNone(wasm_globaltype_delete(None))
 
     def test_wasm_globaltype_content_pos(self):
@@ -129,33 +129,33 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_globaltype_copy_neg(self):
         self.assertIsNone(wasm_globaltype_copy(None))
-        
+
     def test_wasm_tabletype_new_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        limits = Limits(min = 0, max = 0xffffffff)
+        limits = limits(min = 0, max = 0xffffffff)
         self.assertIsNotNone(wasm_tabletype_new(vt, limits))
-    
+
     def test_wasm_tabletype_new_neg(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
         self.assertIsNone(wasm_tabletype_new(vt, None))
 
     def test_wasm_tabletype_delete_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        self.assertIsNone(wasm_tabletype_delete(wasm_tabletype_new(vt, Limits(0, 0xffffffff))))
+        self.assertIsNone(wasm_tabletype_delete(wasm_tabletype_new(vt, limits(0, 0xffffffff))))
 
     def test_wasm_tabletype_delete_neg(self):
-        self.assertIsNone(wasm_tabletype_delete(None)) 
+        self.assertIsNone(wasm_tabletype_delete(None))
 
     def test_wasm_tabletype_element_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
-        tt = wasm_tabletype_new(vt, Limits(0, 0xffffffff))
+        tt = wasm_tabletype_new(vt, limits(0, 0xffffffff))
         self.assertEqual(vt, wasm_tabletype_element(tt))
 
     def test_wasm_tabletype_element_neg(self):
         self.assertIsNone(wasm_tabletype_element(None))
 
     def test_wasm_tabletype_limits_pos(self):
-        limits = Limits(min = 0, max = 0x0000ffff)
+        limits = limits(min = 0, max = 0x0000ffff)
         tt = wasm_tabletype_new(wasm_valtype_new(WASM_FUNCREF), limits)
         self.assertEqual(limits, wasm_tabletype_limits(tt))
 
@@ -164,7 +164,7 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_copy_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
-        tt1 = wasm_tabletype_new(vt, Limits(0, 0xffffffff))
+        tt1 = wasm_tabletype_new(vt, limits(0, 0xffffffff))
         tt2 = wasm_tabletype_copy(tt1)
         self.assertEqual(tt1, tt2)
 
