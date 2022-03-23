@@ -86,6 +86,89 @@ class BasicTestSuite(unittest.TestCase):
     def test_wasm_valtype_copy_neg(self):
         self.assertIsNone(wasm_valtype_copy(None))
 
+    def test_wasm_valtype_vec_new_pos(self):
+        data = wasm_valtype_t * 3
+        data[0] = wasm_valtype_new(WASM_I32)
+        data[1] = wasm_valtype_new(WASM_F64)
+        data[2] = wasm_valtype_new(WASM_ANYREF)
+
+        v = wasm_valtype_vec()
+        wasm_valtype_vec_new(byref(v), 3, byref(data))
+
+    def test_wasm_valtype_vec_new_neg(self):
+        # should not raise any exception
+        wasm_valtype_vec_new(None, 0, None)
+        wasm_valtype_vec_new(None, 10, None)
+
+        v = wasm_valtype_vec()
+        wasm_valtype_vec_new(v, 0, None)
+        wasm_valtype_vec_new(v, 0, None)
+
+        data = wasm_valtype_t * 3
+        data[0] = wasm_valtype_new(WASM_I32)
+        data[1] = wasm_valtype_new(WASM_F64)
+        data[2] = wasm_valtype_new(WASM_ANYREF)
+
+        v = wasm_valtype_vec()
+        wasm_valtype_vec_new(v, 0, data)
+        wasm_valtype_vec_new(v, 10, data)
+
+    def test_wasm_valtype_vec_new_uninitialized_pos(self):
+        v = wasm_valtype_vec()
+        wasm_valtype_vec_new_uninitialized(byref(v), 10)
+
+        self.assertIsNotNone(v)
+        self.assertIsNone(v.data)
+        self.assertEqual(10, v.size)
+
+    def test_wasm_valtype_vec_new_uninitialized_neg(self):
+        wasm_valtype_vec_new_uninitialized(None)
+
+    def test_wasm_valtype_vec_new_empty_pos(self):
+        v = wasm_valtype_vec()
+        wasm_valtype_vec_new_empty(byref(v))
+
+        self.assertIsNotNone(v)
+        self.assertIsNone(v.data)
+        self.assertEqual(0, v.size)
+
+    def test_wasm_valtype_vec_new_empty_neg(self):
+        wasm_valtype_vec_new_empty(None)
+
+    def test_wasm_valtype_vec_copy_pos(self):
+        v1 = wasm_valtype_vec()
+        wasm_valtype_vec_new_empty(byref(v1))
+
+        v2 = wasm_valtype_vec()
+        wasm_valtype_vec_copy(byref(v2))
+
+        self.assertEqual(v1, v2)
+
+        v1 = wasm_valtype_vec()
+        wasm_valtype_vec_new_uninitialized(byref(v1), 3)
+
+        v2 = wasm_valtype_vec()
+        wasm_valtype_vec_copy(byref(v2))
+
+        self.assertEqual(v1, v2)
+
+        # more cases with wasm_valtype_vec_new
+
+    def test_wasm_valtype_vec_copy_neg(self):
+        wasm_valtype_vec_copy(None)
+
+    def test_wasm_valtype_vec_delete_pos(self):
+        v = wasm_valtype_vec()
+        wasm_valtype_vec_new_uninitialized(byref(v), 10)
+        wasm_valtype_vec_delete(v)
+
+        self.assertIsNotNone(v)
+        self.assertEqual(0, v.size)
+        self.assertIsNone(v.data)
+
+    def test_wasm_valtype_vec_delete_neg(self):
+        wasm_valtype_vec_delete(None)
+
     def test_wasm_globaltype_new_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
         self.assertIsNotNone(wasm_globaltype_new(vt, True))
@@ -132,7 +215,7 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_new_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        limits = limits(min = 0, max = 0xffffffff)
+        limits = limits(min=0, max=0xFFFFFFFF)
         self.assertIsNotNone(wasm_tabletype_new(vt, limits))
 
     def test_wasm_tabletype_new_neg(self):
@@ -141,21 +224,23 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_delete_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        self.assertIsNone(wasm_tabletype_delete(wasm_tabletype_new(vt, limits(0, 0xffffffff))))
+        self.assertIsNone(
+            wasm_tabletype_delete(wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF)))
+        )
 
     def test_wasm_tabletype_delete_neg(self):
         self.assertIsNone(wasm_tabletype_delete(None))
 
     def test_wasm_tabletype_element_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
-        tt = wasm_tabletype_new(vt, limits(0, 0xffffffff))
+        tt = wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF))
         self.assertEqual(vt, wasm_tabletype_element(tt))
 
     def test_wasm_tabletype_element_neg(self):
         self.assertIsNone(wasm_tabletype_element(None))
 
     def test_wasm_tabletype_limits_pos(self):
-        limits = limits(min = 0, max = 0x0000ffff)
+        limits = limits(min=0, max=0x0000FFFF)
         tt = wasm_tabletype_new(wasm_valtype_new(WASM_FUNCREF), limits)
         self.assertEqual(limits, wasm_tabletype_limits(tt))
 
@@ -164,7 +249,7 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_copy_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
-        tt1 = wasm_tabletype_new(vt, limits(0, 0xffffffff))
+        tt1 = wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF))
         tt2 = wasm_tabletype_copy(tt1)
         self.assertEqual(tt1, tt2)
 

@@ -330,8 +330,8 @@ libc.printf(b"Hello, an int %d, a float %f, a string %s\n", c_int(1), c_doulbe(3
 
 #### special syntax for `Structure`
 
-- `__eq__` for structures of types. It is used when comparing two types, but
-  not sure if _bindgen.py_ can implement that.
+- add `__eq__` into Structure of types. It is used when comparing two types.
+- add `__eq__` into Structure of vectors. It is used when comparing two vectors.
 
 ### bindgen.py
 
@@ -504,7 +504,7 @@ The whole project is under test-driven development. Every wrapper function will
 have two kinds of test cases. The first kind is a positive case. It checks a
 wrapper function with expected and safe arguments combinations. Its goal is the
 function should work well with expected inputs. Another kind is a negative
-case. It feeds unexpected argument combinations into a wrapper function. Arguments
+case. It feeds unexpected arguments combinations into a wrapper function. Arguments
 should include but not be limited to `None`. It ensures that the function will
 gracefully handle invalid input or unexpected behaviors.
 
