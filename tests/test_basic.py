@@ -73,7 +73,9 @@ class BasicTestSuite(unittest.TestCase):
         self.assertFalse(wasm_valtype_is_ref(wasm_valtype_new(130)))
 
     def test_wasm_valtype_delete_pos(self):
-        self.assertIsNone(wasm_valtype_delete(wasm_valtype_new(WASM_ANYREF)))
+        vt = wasm_valtype_new(WASM_ANYREF)
+        wasm_valtype_delete(vt)
+        self.assertIsNone(vt)
 
     def test_wasm_valtype_delete_neg(self):
         self.assertIsNone(wasm_valtype_delete(None))
@@ -179,7 +181,11 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_globaltype_delete_pos(self):
         vt = wasm_valtype_new(WASM_ANYREF)
-        self.assertIsNone(wasm_globaltype_delete(wasm_globaltype_new(vt, True)))
+        gt = wasm_globaltype_new(vt, True)
+        wasm_globaltype_delete(gt)
+
+        self.assertIsNone(vt)
+        self.assertIsNone(gt)
 
     def test_wasm_globaltype_delete_neg(self):
         self.assertIsNone(wasm_globaltype_delete(None))
@@ -224,9 +230,11 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_delete_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        self.assertIsNone(
-            wasm_tabletype_delete(wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF)))
-        )
+        tt = wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF))
+        wasm_tabletype_delete(tt)
+
+        self.assertIsNone(vt)
+        self.assertIsNone(tt)
 
     def test_wasm_tabletype_delete_neg(self):
         self.assertIsNone(wasm_tabletype_delete(None))
@@ -255,6 +263,39 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_copy_neg(self):
         self.assertIsNone(wasm_tabletype_copy(None))
+    def test_wasm_memorytype_new_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        self.assertIsNotNone(wasm_memorytype_new(limits)) 
+
+    def test_wasm_memorytype_new_neg(self):
+        self.assertIsNone(wasm_memorytype_new(None))
+
+    def test_wasm_memorytype_delete_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        mt = wasm_memorytype_new(limits)
+        wasm_memorytype_delete(mt)
+
+        self.assertIsNone(mt)
+
+    def test_wasm_memorytype_delete_neg(self):
+        self.assertIsNone(wasm_memorytype_delete(None)) 
+
+    def test_wasm_memorytype_limits_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        mt = wasm_memorytype_new(limits)
+        self.assertEqual(limits, wasm_memorytype_limits(mt))
+
+    def test_wasm_memorytype_limits_neg(self):
+        self.assertIsNone(wasm_memorytype_limits(None))
+
+    def test_wasm_memorytype_copy_pos(self):
+        limits = Limits(min = 0, max = 0xffffffff)
+        mt1 = wasm_memorytype_new(limits)
+        mt2 = wasm_memorytype_copy(mt1)
+        self.assertEqual(mt1, mt2)
+
+    def test_wasm_memorytype_copy_neg(self):
+        self.assertIsNone(wasm_memorytype_copy(None))
 
     def test_wasm_engine_new_pos(self):
         self.assertIsNotNone(wasm_engine_new())
