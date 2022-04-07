@@ -12,34 +12,18 @@ import unittest
 
 
 class BasicTestSuite(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls._wasm_engine = wasm_engine_new()
+
     def test_wasm_valkind_pos(self):
         self.assertEqual(
             [WASM_I32, WASM_I64, WASM_F32, WASM_F64, WASM_ANYREF, WASM_FUNCREF],
-            [0, 1, 2, 3, 4, 128, 129],
+            [0, 1, 2, 3, 128, 129],
         )
 
     def test_wasm_valkind_neg(self):
         pass
-
-    def test_wasm_valkind_is_num_pos(self):
-        self.assertTrue(wasm_valkind_is_num(WASM_I64))
-        self.assertTrue(wasm_valkind_is_num(WASM_F64))
-        self.assertFalse(wasm_valkind_is_num(WASM_ANYREF))
-        self.assertFalse(wasm_valkind_is_num(WASM_FUNCREF))
-
-    def test_wasm_valkind_is_num_neg(self):
-        self.assertFalse(wasm_valkind_is_num(None))
-        self.assertFalse(wasm_valkind_is_num(7))
-
-    def test_wasm_valkind_is_ref_pos(self):
-        self.assertFalse(wasm_valkind_is_ref(WASM_I64))
-        self.assertFalse(wasm_valkind_is_ref(WASM_F64))
-        self.assertTrue(wasm_valkind_is_ref(WASM_ANYREF))
-        self.assertTrue(wasm_valkind_is_ref(WASM_FUNCREF))
-
-    def test_wasm_valkind_is_ref_neg(self):
-        self.assertFalse(wasm_valkind_is_ref(None))
-        self.assertFalse(wasm_valkind_is_ref(199))
 
     def test_wasm_valtype_new_pos(self):
         self.assertIsNone(wasm_valtype_new(WASM_I32))
@@ -53,24 +37,6 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_valtype_kind_neg(self):
         self.assertNotEqual(wasm_valtype_kind(wasm_valtype_new(5)), WASM_I32)
-
-    def test_wasm_valtype_is_num_pos(self):
-        self.assertTrue(wasm_valtype_is_num(wasm_valtype_new(WASM_F32)))
-        self.assertTrue(wasm_valtype_is_num(wasm_valtype_new(WASM_F64)))
-
-    def test_wasm_valtype_is_num_neg(self):
-        self.assertFalse(wasm_valtype_is_num(wasm_valtype_new(None)))
-        self.assertFalse(wasm_valtype_is_num(wasm_valtype_new(5)))
-        self.assertFalse(wasm_valtype_is_num(wasm_valtype_new(130)))
-
-    def test_wasm_valtype_is_ref_pos(self):
-        self.assertTrue(wasm_valtype_is_ref(wasm_valtype_new(WASM_ANYREF)))
-        self.assertTrue(wasm_valtype_is_ref(wasm_valtype_new(WASM_FUNCREF)))
-
-    def test_wasm_valtype_is_ref_neg(self):
-        self.assertFalse(wasm_valtype_is_ref(wasm_valtype_new(None)))
-        self.assertFalse(wasm_valtype_is_ref(wasm_valtype_new(5)))
-        self.assertFalse(wasm_valtype_is_ref(wasm_valtype_new(130)))
 
     def test_wasm_valtype_delete_pos(self):
         vt = wasm_valtype_new(WASM_ANYREF)
@@ -89,87 +55,58 @@ class BasicTestSuite(unittest.TestCase):
         self.assertIsNone(wasm_valtype_copy(None))
 
     def test_wasm_valtype_vec_new_pos(self):
-        data = wasm_valtype_t * 3
+        data_type = wasm_valtype_t * 3
+        data = data_type()
         data[0] = wasm_valtype_new(WASM_I32)
         data[1] = wasm_valtype_new(WASM_F64)
         data[2] = wasm_valtype_new(WASM_ANYREF)
 
-        v = wasm_valtype_vec()
+        v = wasm_valtype_vec_t()
+        self.assertEqual(v.size, 0)
         wasm_valtype_vec_new(byref(v), 3, byref(data))
+        self.assertEqual(v.size, 3)
 
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_new_neg(self):
-        # should not raise any exception
-        wasm_valtype_vec_new(None, 0, None)
-        wasm_valtype_vec_new(None, 10, None)
-
-        v = wasm_valtype_vec()
-        wasm_valtype_vec_new(v, 0, None)
-        wasm_valtype_vec_new(v, 0, None)
-
-        data = wasm_valtype_t * 3
-        data[0] = wasm_valtype_new(WASM_I32)
-        data[1] = wasm_valtype_new(WASM_F64)
-        data[2] = wasm_valtype_new(WASM_ANYREF)
-
-        v = wasm_valtype_vec()
-        wasm_valtype_vec_new(v, 0, data)
-        wasm_valtype_vec_new(v, 10, data)
+        pass
 
     def test_wasm_valtype_vec_new_uninitialized_pos(self):
-        v = wasm_valtype_vec()
+        v = wasm_valtype_vec_t()
         wasm_valtype_vec_new_uninitialized(byref(v), 10)
 
         self.assertIsNotNone(v)
-        self.assertIsNone(v.data)
         self.assertEqual(10, v.size)
 
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_new_uninitialized_neg(self):
-        wasm_valtype_vec_new_uninitialized(None)
+        pass
 
     def test_wasm_valtype_vec_new_empty_pos(self):
-        v = wasm_valtype_vec()
+        v = wasm_valtype_vec_t()
         wasm_valtype_vec_new_empty(byref(v))
 
         self.assertIsNotNone(v)
-        self.assertIsNone(v.data)
         self.assertEqual(0, v.size)
 
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_new_empty_neg(self):
-        wasm_valtype_vec_new_empty(None)
+        pass
 
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_copy_pos(self):
-        v1 = wasm_valtype_vec()
-        wasm_valtype_vec_new_empty(byref(v1))
+        pass
 
-        v2 = wasm_valtype_vec()
-        wasm_valtype_vec_copy(byref(v2))
-
-        self.assertEqual(v1, v2)
-
-        v1 = wasm_valtype_vec()
-        wasm_valtype_vec_new_uninitialized(byref(v1), 3)
-
-        v2 = wasm_valtype_vec()
-        wasm_valtype_vec_copy(byref(v2))
-
-        self.assertEqual(v1, v2)
-
-        # more cases with wasm_valtype_vec_new
-
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_copy_neg(self):
-        wasm_valtype_vec_copy(None)
+        pass
 
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_delete_pos(self):
-        v = wasm_valtype_vec()
-        wasm_valtype_vec_new_uninitialized(byref(v), 10)
-        wasm_valtype_vec_delete(v)
+        pass
 
-        self.assertIsNotNone(v)
-        self.assertEqual(0, v.size)
-        self.assertIsNone(v.data)
-
+    @unittest.skip("TBD: redesign cases about wasm_xxx_vec_t")
     def test_wasm_valtype_vec_delete_neg(self):
-        wasm_valtype_vec_delete(None)
+        pass
 
     def test_wasm_globaltype_new_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
@@ -221,16 +158,17 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_new_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        limits = limits(min=0, max=0xFFFFFFFF)
-        self.assertIsNotNone(wasm_tabletype_new(vt, limits))
+        wasm_limits_t = wasm_limits_t(min=0, max=0xFFFFFFFF)
+        self.assertIsNotNone(wasm_tabletype_new(vt, wasm_limits_t))
 
+    @unittest.skip("TBD: make sure if limits is null-able")
     def test_wasm_tabletype_new_neg(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
         self.assertIsNone(wasm_tabletype_new(vt, None))
 
     def test_wasm_tabletype_delete_pos(self):
         vt = wasm_valtype_new(WASM_F32)
-        tt = wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF))
+        tt = wasm_tabletype_new(vt, wasm_limits_t(0, 0xFFFFFFFF))
         wasm_tabletype_delete(tt)
 
         self.assertIsNone(vt)
@@ -241,68 +179,64 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_tabletype_element_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
-        tt = wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF))
+        tt = wasm_tabletype_new(vt, wasm_limits_t(0, 0xFFFFFFFF))
         self.assertEqual(vt, wasm_tabletype_element(tt))
 
     def test_wasm_tabletype_element_neg(self):
         self.assertIsNone(wasm_tabletype_element(None))
 
     def test_wasm_tabletype_limits_pos(self):
-        limits = limits(min=0, max=0x0000FFFF)
-        tt = wasm_tabletype_new(wasm_valtype_new(WASM_FUNCREF), limits)
-        self.assertEqual(limits, wasm_tabletype_limits(tt))
+        wasm_limits_t = wasm_limits_t(min=0, max=0x0000FFFF)
+        tt = wasm_tabletype_new(wasm_valtype_new(WASM_FUNCREF), wasm_limits_t)
+        self.assertEqual(wasm_limits_t, wasm_tabletype_limits(tt))
 
     def test_wasm_tabletype_limits_neg(self):
         self.assertIsNone(wasm_tabletype_limits(None))
 
     def test_wasm_tabletype_copy_pos(self):
         vt = wasm_valtype_new(WASM_FUNCREF)
-        tt1 = wasm_tabletype_new(vt, limits(0, 0xFFFFFFFF))
+        tt1 = wasm_tabletype_new(vt, wasm_limits_t(0, 0xFFFFFFFF))
         tt2 = wasm_tabletype_copy(tt1)
         self.assertEqual(tt1, tt2)
 
     def test_wasm_tabletype_copy_neg(self):
         self.assertIsNone(wasm_tabletype_copy(None))
+
     def test_wasm_memorytype_new_pos(self):
-        limits = Limits(min = 0, max = 0xffffffff)
-        self.assertIsNotNone(wasm_memorytype_new(limits)) 
+        wasm_limits_t = wasm_limits_t(min=0, max=0xFFFFFFFF)
+        self.assertIsNotNone(wasm_memorytype_new(wasm_limits_t))
 
     def test_wasm_memorytype_new_neg(self):
         self.assertIsNone(wasm_memorytype_new(None))
 
     def test_wasm_memorytype_delete_pos(self):
-        limits = Limits(min = 0, max = 0xffffffff)
-        mt = wasm_memorytype_new(limits)
+        wasm_limits_t = wasm_limits_t(min=0, max=0xFFFFFFFF)
+        mt = wasm_memorytype_new(wasm_limits_t)
         wasm_memorytype_delete(mt)
 
         self.assertIsNone(mt)
 
     def test_wasm_memorytype_delete_neg(self):
-        self.assertIsNone(wasm_memorytype_delete(None)) 
+        self.assertIsNone(wasm_memorytype_delete(None))
 
     def test_wasm_memorytype_limits_pos(self):
-        limits = Limits(min = 0, max = 0xffffffff)
-        mt = wasm_memorytype_new(limits)
-        self.assertEqual(limits, wasm_memorytype_limits(mt))
+        wasm_limits_t = wasm_limits_t(min=0, max=0xFFFFFFFF)
+        mt = wasm_memorytype_new(wasm_limits_t)
+        self.assertEqual(wasm_limits_t, wasm_memorytype_limits(mt))
 
     def test_wasm_memorytype_limits_neg(self):
         self.assertIsNone(wasm_memorytype_limits(None))
 
     def test_wasm_memorytype_copy_pos(self):
-        limits = Limits(min = 0, max = 0xffffffff)
-        mt1 = wasm_memorytype_new(limits)
+        wasm_limits_t = wasm_limits_t(min=0, max=0xFFFFFFFF)
+        mt1 = wasm_memorytype_new(wasm_limits_t)
         mt2 = wasm_memorytype_copy(mt1)
         self.assertEqual(mt1, mt2)
 
     def test_wasm_memorytype_copy_neg(self):
         self.assertIsNone(wasm_memorytype_copy(None))
 
-    def test_wasm_engine_new_pos(self):
-        self.assertIsNotNone(wasm_engine_new())
-
     # wasm_egnine_new() should always return a wasm_engine_t
-    def test_wasm_engine_new_neg(self):
-        pass
 
     def test_wasm_store_new_pos(self):
         engine = wasm_engine_new()
@@ -310,6 +244,10 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_wasm_store_new_neg(self):
         self.assertIsNone(wasm_store_new(None))
+
+    @classmethod
+    def tearDownClass(cls):
+        wasm_engine_delete(cls._wasm_engine)
 
 
 if __name__ == "__main__":
