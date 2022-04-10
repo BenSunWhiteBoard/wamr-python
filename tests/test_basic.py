@@ -16,6 +16,9 @@ class BasicTestSuite(unittest.TestCase):
     def setUpClass(cls):
         cls._wasm_engine = wasm_engine_new()
 
+    def assertIsNullPointer(self, pointer):
+        self.assertFalse(pointer)
+
     def test_wasm_valkind_pos(self):
         self.assertEqual(
             [WASM_I32, WASM_I64, WASM_F32, WASM_F64, WASM_ANYREF, WASM_FUNCREF],
@@ -26,25 +29,27 @@ class BasicTestSuite(unittest.TestCase):
         pass
 
     def test_wasm_valtype_new_pos(self):
-        self.assertIsNone(wasm_valtype_new(WASM_I32))
+        vt = wasm_valtype_new(WASM_I32)
+        self.assertEqual(wasm_valtype_kind(vt), WASM_I32)
 
     def test_wasm_valtype_new_neg(self):
-        self.assertIsNone(wasm_valtype_new(None))
-        self.assertIsNone(wasm_valtype_new(37))
+        self.assertIsNullPointer(wasm_valtype_new(37))
 
     def test_wasm_valtype_kind_pos(self):
         self.assertEqual(wasm_valtype_kind(wasm_valtype_new(WASM_I64)), WASM_I64)
 
     def test_wasm_valtype_kind_neg(self):
-        self.assertNotEqual(wasm_valtype_kind(wasm_valtype_new(5)), WASM_I32)
+        self.assertIsNullPointer(wasm_valtype_new(5))
 
     def test_wasm_valtype_delete_pos(self):
         vt = wasm_valtype_new(WASM_ANYREF)
         wasm_valtype_delete(vt)
-        self.assertIsNone(vt)
+        self.assertNotEqual(wasm_valtype_kind(vt), WASM_ANYREF)
 
     def test_wasm_valtype_delete_neg(self):
-        self.assertIsNone(wasm_valtype_delete(None))
+        vt = wasm_valtype_new(37)
+        wasm_valtype_delete(vt)
+        self.assertIsNullPointer(vt)
 
     def test_wasm_valtype_copy_pos(self):
         vt1 = wasm_valtype_new(WASM_FUNCREF)
@@ -52,7 +57,9 @@ class BasicTestSuite(unittest.TestCase):
         self.assertEqual(wasm_valtype_kind(vt1), wasm_valtype_kind(vt2))
 
     def test_wasm_valtype_copy_neg(self):
-        self.assertIsNone(wasm_valtype_copy(None))
+        vt1 = wasm_valtype_new(37)
+        vt2 = wasm_valtype_copy(vt1)
+        self.assertIsNullPointer(vt2)
 
     def test_wasm_valtype_vec_new_pos(self):
         data_type = wasm_valtype_t * 3
